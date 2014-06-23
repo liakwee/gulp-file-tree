@@ -1,0 +1,27 @@
+{
+  "name": "gulp-file-tree",
+  "version": "0.0.0",
+  "description": "A gulp plugin for amalgamating a stream of files into a file tree",
+  "main": "gulp-file-tree.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iamcdonald/gulp-file-tree.git"
+  },
+  "keywords": [
+    "gulpplugin",
+    "filetree",
+    "file",
+    "tree",
+    "gulp",
+    "directory"
+  ],
+  "author": "Iain McDonald",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/iamcdonald/gulp-file-tree/issues"
+  },
+  "homepage": "https://github.com/iamcdonald/gulp-file-tree"
+}
