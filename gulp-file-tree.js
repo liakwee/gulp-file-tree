@@ -12,11 +12,16 @@ function gulpFileTree(options) {
 	this.files = [];
 	this.tree;
 	
-	this.output = options.output || 'tree';						//output to external file or object (no output if set to 'none')
-	this.outputFormat = this.setOutputFormat(options.outputFormat);	//format type - 'json', 'raw', a function can be passed to custom format
-	this.appendProperty = options.appendProperty || null;		//property to use when appending tree to file
-	this.emitFiles = options.emitFiles || false;				//whether or not to emit files used to build tree
-	this.properties = options.properties || null;		//properties to take from each file node in tree	
+	//output to external file or object (no output if set to 'none')
+	this.output = options.output || 'tree';						
+	//format type - 'json', 'raw', a function can be passed to custom format
+	this.outputFormat = this.setOutputFormat(options.outputFormat);	
+	//property to use when appending tree to file
+	this.appendProperty = options.appendProperty || null;		
+	//whether or not to emit files used to build tree
+	this.emitFiles = options.emitFiles || false;				
+	//properties to take from each file node in tree	
+	this.properties = options.properties || null;		
 }
 
 gulpFileTree.prototype.setOutputFormat = function (format) {
@@ -42,7 +47,7 @@ gulpFileTree.prototype.outputFiles = function () {
 		var self = this;
 		self.files.forEach(function (file) {
 			if (self.appendTreeProperty) {
-				file[self.appendTreeProperty] = self.tree.findChildByPath(file.path);
+				file[self.appendTreeProperty] = self.tree.findNodeByPath(file.path);
 			}
 			self.push(file);
 		});
@@ -63,8 +68,8 @@ gulpFileTree.prototype.outputTree = function () {
 		if (typeof this.output === 'string') {
 		 	var contents = (this.tree instanceof TreeNode) ? this.tree.removeCircular() : this.tree;
 			this.push(new File({
-				base: '/',
-				path: '/' + this.output + '.json',
+				base: '',
+				path: this.output + '.json',
 				contents: new Buffer(JSON.stringify(contents, null, '\t'))
 			}))
 		}
@@ -72,9 +77,9 @@ gulpFileTree.prototype.outputTree = function () {
 }
 
 gulpFileTree.prototype._transform = function (file, encoding, callback) {
-	this.tree = this.tree || new TreeNode(undefined, file.cwd);
+	this.tree = this.tree || new TreeNode(file.cwd);
 	this.files.push(file);
-	this.tree.addChild(new TreeNode(file));
+	this.tree.addNode(new TreeNode(file.path, file));
 	callback();
 }
 
@@ -92,5 +97,6 @@ gulpFileTree.prototype._flush = function (callback) {
 
 
 module.exports = function (options) {
+	options = options || {};
 	return new gulpFileTree(options);
 };
