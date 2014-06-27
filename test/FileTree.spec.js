@@ -44,9 +44,9 @@ describe('TreeNode', function () {
 		var root;
 		beforeEach(function () {
 			root = new TreeNode('a');
-			root.addNode(new TreeNode('a/1'));
-			root.addNode(new TreeNode('a/2'));
-			root.addNode(new TreeNode('a/1/i'));
+			root.addChildNode(new TreeNode('a/1'));
+			root.addChildNode(new TreeNode('a/2'));
+			root.addChildNode(new TreeNode('a/1/i'));
 		});
 
 		describe('setValue', function () {
@@ -153,7 +153,7 @@ describe('TreeNode', function () {
 			});
 		});
 
-		describe('addNode', function () {
+		describe('addChildNode', function () {
 
 			it('has correct root before tests begin', function () {
 				assert.equal(root.path, 'a');
@@ -167,13 +167,13 @@ describe('TreeNode', function () {
 
 			it('adds TreeNode at correct level in tree', function () {
 				var tn = new TreeNode('a/3');
-				root.addNode(tn);
+				root.addChildNode(tn);
 				assert.equal(root.children[2], tn);
 				tn = new TreeNode('a/1/ii');
-				root.addNode(tn);
+				root.addChildNode(tn);
 				assert.equal(root.children[0].children[1], tn);
 				tn = new TreeNode('a/2/i');
-				root.addNode(tn);
+				root.addChildNode(tn);
 				assert.equal(root.children[1].children[0], tn);
 
 			});
@@ -181,7 +181,7 @@ describe('TreeNode', function () {
 			it('creates supporting parent folders if they do not already exist', function () {
 				var tn = new TreeNode('a/12/4/jello'),
 					temp;
-				root.addNode(tn);
+				root.addChildNode(tn);
 				temp = root.children[2];
 				assert.equal(temp.path, 'a/12');
 				temp = temp.children[0];
@@ -194,17 +194,17 @@ describe('TreeNode', function () {
 			it('throws error if TreeNode cannot be added under current TreeNode', function () {
 				var tn = new TreeNode('a/3');
 				assert.throws(function () {
-					root.children[0].children[0].addNode(tn);
+					root.children[0].children[0].addChildNode(tn);
 				}, Error);
 				
 				tn = new TreeNode('a/1/ii');
 				assert.throws(function () {
-					root.children[1].addNode(tn);
+					root.children[1].addChildNode(tn);
 				}, Error);
 				
 				tn = new TreeNode('a/2/i');
 				assert.throws(function () {
-					root.children[2].addNode(tn);
+					root.children[2].addChildNode(tn);
 				}, Error);
 			});	
 		});
@@ -236,9 +236,9 @@ describe('TreeNode', function () {
 					});
 					 
 				root = new TreeNode('some');
-				root.addNode(new TreeNode('some/fake'));
-				root.addNode(new TreeNode('some/fake/folders'));
-				root.addNode(temp);
+				root.addChildNode(new TreeNode('some/fake'));
+				root.addChildNode(new TreeNode('some/fake/folders'));
+				root.addChildNode(temp);
 				assert.equal(root.children[0].children[0].children[0].path, 'some/fake/folders/a');
 				assert.equal(root.children[0].children[0].children[0].children.length, 2);
 			});
