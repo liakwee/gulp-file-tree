@@ -1,3 +1,7 @@
+/* global describe, it */
+
+'use strict';
+
 var assert = require('assert'),
 	gulp = require('gulp'),
 	TreeNode = require('../lib/TreeNode'),
@@ -16,7 +20,7 @@ describe('gulp-file-tree', function () {
 		});
 		gft.on('end', function () {
 			assert.equal(files.length, 0);
-			assert.deepEqual(treeObject, {});
+			assert.deepEqual(treeObject, {tree: {}});
 			done();
 		});
 
@@ -38,8 +42,8 @@ describe('gulp-file-tree', function () {
 					assert.equal(files.length, 1);
 					assert.equal(files[0].path, 'tree.json');
 					assert.deepEqual(tree['.']['a.html'], {'relative' : 'a.html'});
-					assert.deepEqual(tree['.']['one']['c.json'], {'relative' : 'one/c.json'});
-					assert.deepEqual(tree['.']['two']['three']['a.html'], {'relative' : 'two/three/a.html'});
+					assert.deepEqual(tree['.'].one['c.json'], {'relative' : 'one/c.json'});
+					assert.deepEqual(tree['.'].two.three['a.html'], {'relative' : 'two/three/a.html'});
 					done();
 				});
 	
@@ -60,8 +64,8 @@ describe('gulp-file-tree', function () {
 					assert.equal(files.length, 1);
 					assert.equal(files[0].path, 'path/to/tree.json');
 					assert.deepEqual(tree['.']['a.html'], {'relative' : 'a.html'});
-					assert.deepEqual(tree['.']['one']['c.json'], {'relative' : 'one/c.json'});
-					assert.deepEqual(tree['.']['two']['three']['a.html'], {'relative' : 'two/three/a.html'});
+					assert.deepEqual(tree['.'].one['c.json'], {'relative' : 'one/c.json'});
+					assert.deepEqual(tree['.'].two.three['a.html'], {'relative' : 'two/three/a.html'});
 					done();
 				});
 	
@@ -79,9 +83,9 @@ describe('gulp-file-tree', function () {
 				});
 				gft.on('end', function () {
 					assert.equal(files.length, 0);
-					assert.deepEqual(treeObject['.']['a.html']['relative'], 'a.html');
-					assert.deepEqual(treeObject['.']['one']['c.json']['relative'], 'one/c.json');
-					assert.deepEqual(treeObject['.']['two']['three']['a.html']['relative'], 'two/three/a.html');
+					assert.equal(treeObject.tree['.']['a.html'].relative, 'a.html');
+					assert.equal(treeObject.tree['.'].one['c.json'].relative, 'one/c.json');
+					assert.equal(treeObject.tree['.'].two.three['a.html'].relative, 'two/three/a.html');
 					done();
 				});
 	
@@ -153,10 +157,10 @@ describe('gulp-file-tree', function () {
 					cwd = file.cwd;
 				});
 				gft.on('end', function () {
-					assert.equal(treeObject['.']['b.css']['cwd'], cwd); 
-					assert.equal(treeObject['.']['b.css']['relative'], 'b.css'); 
-					assert.equal(treeObject['.']['two']['f.txt']['cwd'], cwd); 
-					assert.equal(treeObject['.']['two']['f.txt']['relative'], 'two/f.txt');
+					assert.equal(treeObject.tree['.']['b.css'].cwd, cwd); 
+					assert.equal(treeObject.tree['.']['b.css'].relative, 'b.css'); 
+					assert.equal(treeObject.tree['.'].two['f.txt'].cwd, cwd); 
+					assert.equal(treeObject.tree['.'].two['f.txt'].relative, 'two/f.txt');
 					done();
 				});
 	
@@ -176,10 +180,10 @@ describe('gulp-file-tree', function () {
 					cwd = file.cwd;
 				});
 				gft.on('end', function () {
-					assert.equal(treeObject['.']['b.css']['projectDir'], cwd); 
-					assert.equal(treeObject['.']['b.css']['relative'], 'b.css'); 
-					assert.equal(treeObject['.']['two']['f.txt']['projectDir'], cwd); 
-					assert.equal(treeObject['.']['two']['f.txt']['relative'], 'two/f.txt');
+					assert.equal(treeObject.tree['.']['b.css'].projectDir, cwd); 
+					assert.equal(treeObject.tree['.']['b.css'].relative, 'b.css'); 
+					assert.equal(treeObject.tree['.'].two['f.txt'].projectDir, cwd); 
+					assert.equal(treeObject.tree['.'].two['f.txt'].relative, 'two/f.txt');
 					done();
 				});
 	
@@ -202,10 +206,10 @@ describe('gulp-file-tree', function () {
 					cwd = file.cwd.length;
 				});
 				gft.on('end', function () {
-					assert.equal(treeObject['.']['b.css']['cwdLength'], cwd); 
-					assert.equal(treeObject['.']['b.css']['relative'], 'b.css'); 
-					assert.equal(treeObject['.']['two']['f.txt']['cwdLength'], cwd); 
-					assert.equal(treeObject['.']['two']['f.txt']['relative'], 'two/f.txt');
+					assert.equal(treeObject.tree['.']['b.css'].cwdLength, cwd); 
+					assert.equal(treeObject.tree['.']['b.css'].relative, 'b.css'); 
+					assert.equal(treeObject.tree['.'].two['f.txt'].cwdLength, cwd); 
+					assert.equal(treeObject.tree['.'].two['f.txt'].relative, 'two/f.txt');
 					done();
 				});
 	
@@ -222,12 +226,11 @@ describe('gulp-file-tree', function () {
 					gft = gulpFileTree({
 							output: treeObject,
 							outputTransform: 'wrong'});
-				gft.on('data', function (file) {
+				gft.on('data', function () {
 				});
 				gft.on('end', function () {
-					var keys = [];
 					function checkNode(node) {
-						for (key in node) {
+						for (var key in node) {
 							if (node.hasOwnProperty(key)) {
 								if (node[key].isNull && !node[key].isNull()) {
 									assert(!!node[key].relative);
@@ -250,11 +253,11 @@ describe('gulp-file-tree', function () {
 					gft = gulpFileTree({
 								output: treeObject,
 								outputTransform: 'json'});
-				gft.on('data', function (file) {
+				gft.on('data', function () {
 				});
 				gft.on('end', function () {
 					function checkNode(node, path) {
-						for (key in node) {
+						for (var key in node) {
 							if (node.hasOwnProperty(key)) {
 								if (node[key].isNull && !node[key].isNull()) {
 									assert.equal(node[key].relative, path + key);
@@ -264,7 +267,7 @@ describe('gulp-file-tree', function () {
 							}
 						}
 					}
-					checkNode(treeObject['.'], '');
+					checkNode(treeObject.tree['.'], '');
 					done();
 				});
 	
@@ -272,18 +275,20 @@ describe('gulp-file-tree', function () {
 					.pipe(gft);
 			});	
 	
-			it('outputs the raw tree if options.outputFormat is \'raw\'', function (done) {
+			it('outputs the raw tree if options.outputTransform is \'raw\'', function (done) {
 				var treeObject = {},
 					gft = gulpFileTree({
 								output: treeObject,
 								outputTransform: 'raw'});
-				gft.on('data', function (file) {
+				gft.on('data', function () {
 				});
 				gft.on('end', function () {
+					
 					function checkNode(node) {
 						assert(node instanceof TreeNode);
 						node.children.forEach(checkNode);
 					}
+					checkNode(treeObject.tree);
 					done();
 				});
 	
@@ -301,7 +306,7 @@ describe('gulp-file-tree', function () {
 							obj.isFile = node.isFile;
 						}
 						obj.files = node.children.filter(function (node) {
-							return node.isFile
+							return node.isFile;
 						}).map(function (node) {
 							return node.title;
 						});
@@ -322,15 +327,16 @@ describe('gulp-file-tree', function () {
 					cwd = file.cwd;
 				});
 				gft.on('end', function () {
-					assert.equal(treeObject.title, cwd + '/test/fixture/path/to/folder');
-					assert.equal(treeObject.files.length, 2);
-					assert.equal(treeObject.folders.length, 2);
-					assert.equal(treeObject.folders[0].title, 'one');
-					assert.equal(treeObject.folders[0].files.length, 3)
-					assert.equal(treeObject.folders[1].title, 'two')
-						assert.equal(treeObject.folders[1].files.length, 2);
-					assert.equal(treeObject.folders[1].folders.length, 1);
-					assert.equal(treeObject.folders[1].folders[0].files.length, 1);
+					var tree = treeObject.tree;
+					assert.equal(tree.title, cwd + '/test/fixture/path/to/folder');
+					assert.equal(tree.files.length, 2);
+					assert.equal(tree.folders.length, 2);
+					assert.equal(tree.folders[0].title, 'one');
+					assert.equal(tree.folders[0].files.length, 3);
+					assert.equal(tree.folders[1].title, 'two');
+					assert.equal(tree.folders[1].files.length, 2);
+					assert.equal(tree.folders[1].folders.length, 1);
+					assert.equal(tree.folders[1].folders[0].files.length, 1);
 					done();
 				});
 	
@@ -354,9 +360,9 @@ describe('gulp-file-tree', function () {
 				gft.on('end', function () {
 					files.forEach(function (file) {
 						assert(file.tree instanceof TreeNode);
-						assert.equal(file.tree.path, treeObject.path);
-						assert.equal(file.tree.children[2].path, treeObject.children[2].path);
-						assert.equal(file.tree.children[3].children[0].path, treeObject.children[3].children[0].path);
+						assert.equal(file.tree.path, treeObject.tree.path);
+						assert.equal(file.tree.children[2].path, treeObject.tree.children[2].path);
+						assert.equal(file.tree.children[3].children[0].path, treeObject.tree.children[3].children[0].path);
 					});
 					done();
 				});
@@ -379,7 +385,7 @@ describe('gulp-file-tree', function () {
 				});
 				gft.on('end', function () {
 					function checkNode(node, testNode) {
-						for (key in node) {
+						for (var key in node) {
 							if (node.hasOwnProperty(key)) {
 								if (node[key].isNull && !node[key].isNull()) {
 									assert.equal(node[key].relative, testNode[key].relative);
@@ -390,7 +396,7 @@ describe('gulp-file-tree', function () {
 						}
 					}
 					files.push(function (file) {
-						checkNode(file['file-tree-struct']['.'], treeObject['.']);
+						checkNode(file['file-tree-struct']['.'], treeObject.tree['.']);
 	
 					});
 					done();

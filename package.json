@@ -4,6 +4,7 @@
   "description": "A gulp plugin for amalgamating a stream of files into a file tree",
   "main": "gulp-file-tree.js",
   "scripts": {
+	"pretest": "jshint *.js && jshint **/*.js",
     "test": "mocha -R spec"
   },
   "repository": {
@@ -26,6 +27,7 @@
   "homepage": "https://github.com/iamcdonald/gulp-file-tree",
   "devDependencies": {
     "gulp": "^3.8.5",
+    "jshint": "^2.5.1",
     "mocha": "^1.20.1",
     "readable-stream": "^1.0.27-1",
     "vinyl": "^0.2.3"

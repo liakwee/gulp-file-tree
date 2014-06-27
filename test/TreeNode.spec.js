@@ -1,3 +1,7 @@
+/* global describe, it, beforeEach */
+
+'use strict';
+
 var assert = require('assert'),
 	TreeNode = require('../lib/TreeNode'),
 	File = require('vinyl');
@@ -257,7 +261,7 @@ describe('TreeNode', function () {
 				function transform (node) {
 					node.value = node.path.length;
 					return node;
-				};
+				}
 				assert.equal(root.value, undefined);
 				assert.equal(root.children[0].value, undefined);
 				assert.equal(root.children[1].value, undefined);
