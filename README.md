@@ -54,6 +54,7 @@ for the following file structure:
 Type: `String|Object`
 
 If an object is supplied the resulting file tree is placed on that object under the property 'tree'.
+
 If a string is supplied the resulting file tree is saved as a .json file using the string as a relative file path.
 
 #### options.properties (default: ['relative'])
