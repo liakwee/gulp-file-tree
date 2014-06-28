@@ -50,14 +50,14 @@ for the following file structure:
 
 ### gulp-file-tree(options)
 
-#### options.output (default: 'tree')
+#### options.output (default: `tree`)
 Type: `String|Object`
 
-If an object is supplied the resulting file tree is placed on that object under the property 'tree'.
+If an object is supplied the resulting file tree is placed on that object under the property `tree`.
 
 If a string is supplied the resulting file tree is saved as a .json file using the string as a relative file path.
 
-#### options.properties (default: ['relative'])
+#### options.properties (default: `['relative']`)
 Type: `Array`
 
 An array of Strings and Objects used to decode the passed in vinyl File objects to the objects found in the resulting file tree.
@@ -78,23 +78,34 @@ An object like:
 `
 will place the returned value of the function on the new object under the property `cwdLength`.
 
-#### options.outputTransform (default: 'json')
+#### options.outputTransform (default: `json`)
 Type: `String|Function`
 
 Allows custom post processing of the resulting file tree.
 
-A string can be used to select either 'raw' (unadulterated file tree) or 'json' (a cut down version sutiable for saving as a.json file).
+A string can be used to select either `raw` (unadulterated file tree) or `json` (a cut down version sutiable for saving as a.json file).
 
 Alternatively a custom function can be passed in which will be ran on every node (in order from the leaf-nodes back to the root-node) before the file tree is output. (As a starting point the function used when the string 'json' is supplied can be found in [lib/transform-options.js](https://github.com/iamcdonald/gulp-file-tree/blob/master/lib/transform-options.js)).
 
 
-#### options.emitFiles (default: false)
+#### options.emitFiles (default: `false`)
 Type: `Boolean`
 
 Indicates whether files passed in should be emitted.
 
-#### options.appendProperty (default: null)
+#### options.appendProperty (default: `null`)
 Type: `String`
 
 A property under which the resulting file tree will be placed on each file object passed through the plugin.
 (Only of use when emitFiles is true).
+
+
+## TreeNode
+
+The plugin uses the [TreeNode](https://github.com/iamcdonald/gulp-file-tree/blob/master/lib/TreeNode.js) object for modelling and building up the tree recursively.
+
+It is this object you have access to if you choose to output the raw tree either to an object or on each passed through [vinyl](https://github.com/wearefractal/vinyl) File. It is also the object passed to a custom `outputTransform` function.
+
+## License
+
+[MIT](http://opensource.org/licenses/MIT) © Iain McDonald
