@@ -1,4 +1,4 @@
-/* global describe, it */
+/* global describe, it, beforeEach */
 
 'use strict';
 
@@ -25,6 +25,126 @@ describe('gulp-file-tree', function () {
 		});
 
 		gulp.src('no/such/folder/**/*')
+			.pipe(gft);
+	});
+
+	describe('correctly builds file tree', function () {
+
+		var allFiles;
+		beforeEach(function (done) {
+			allFiles = [];
+			gulp.src('test/fixture/path/to/folder/**/*')
+				.on('data', function (file) {
+					if (!file.isNull()) {
+						allFiles.push(file);
+					}
+				})
+				.on('end', function () {
+					done();
+				});
+		});
+
+		function checkTree(files, tree) {
+			//files = files.slice(1);
+			var shouldExist = allFiles.filter(function (file) {
+					return files.some(function (f) {
+						return f.path === file.path;
+					});
+				}),
+				shouldNotExist = allFiles.filter(function (file) {
+					return files.every(function (f) {
+						return f.path !== file.path;
+					});
+				}),
+				foundNode;
+				
+			shouldExist.forEach(function (file) {
+				foundNode = tree.findNodeByPath(file.path);
+				assert(foundNode instanceof TreeNode);
+				assert.equal(foundNode.path, file.path);
+			});
+
+			shouldNotExist.forEach(function (file) {
+				assert(tree.findNodeByPath(file.path) === null);					
+			});
+		}
+	
+		it('correctly outputs tree for passed in files - I', function (done) {
+			var treeObject = {},
+				gft = gulpFileTree({
+							output: treeObject, 
+							outputTransform: 'raw',
+							emitFiles: true}),
+				files = [];
+			gft.on('data', function (file){
+				files.push(file);
+			});
+			gft.on('end', function () {
+				checkTree(files, treeObject.tree);
+				done();
+			});
+
+			gulp.src(['test/fixture/path/to/folder/**/*.json',
+					'test/fixture/path/to/folder/**/*.css'])
+				.pipe(gft);
+		});
+
+		it('correctly outputs tree for passed in files - II', function (done) {
+			var treeObject = {},
+				gft = gulpFileTree({
+							output: treeObject, 
+							outputTransform: 'raw',
+							emitFiles: true}),
+				files = [];
+			gft.on('data', function (file){
+				files.push(file);
+			});
+			gft.on('end', function () {
+				checkTree(files, treeObject.tree);
+				done();
+			});
+
+			gulp.src(['test/fixture/path/to/folder/two/**/*.html'])
+				.pipe(gft);
+		});
+
+		it('correctly outputs tree for passed in files - III', function (done) {
+			var treeObject = {},
+				gft = gulpFileTree({
+							output: treeObject, 
+							outputTransform: 'raw',
+							emitFiles: true}),
+				files = [];
+			gft.on('data', function (file){
+				files.push(file);
+			});
+			gft.on('end', function () {
+				checkTree(files, treeObject.tree);
+				done();
+			});
+
+			gulp.src(['test/fixture/**/*.scss'])
+				.pipe(gft);
+		});
+	});
+
+	it('disregards redundant nodes at the root of the tree', function (done) {
+		var treeObject = {},
+			gft = gulpFileTree({
+						output: treeObject, 
+						outputTransform: 'raw',
+						emitFiles: true}),
+			cwd;
+		gft.on('data', function (file){
+			cwd = file.cwd;
+		});
+		gft.on('end', function () {
+			assert.notEqual(treeObject.tree.path, cwd);
+			assert.equal(treeObject.tree.path, cwd + '/test/fixture/path/to/folder');
+			done();
+		});
+
+		gulp.src(['test/fixture/**/*'])
 			.pipe(gft);
 	});
 
