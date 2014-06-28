@@ -5,7 +5,7 @@
 var assert = require('assert'),
 	gulp = require('gulp'),
 	TreeNode = require('../lib/TreeNode'),
-	gulpFileTree = require('../gulp-file-tree');
+	gulpFileTree = require('../index');
 
 describe('gulp-file-tree', function () {
 
