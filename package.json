@@ -13,6 +13,9 @@
   },
   "keywords": [
     "gulpplugin",
+  	"gulp-file-tree",
+	"file-tree",
+	"vartree",
     "filetree",
     "file",
     "tree",
