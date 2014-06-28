@@ -85,7 +85,7 @@ Allows custom post processing of the resulting file tree.
 
 A string can be used to select either 'raw' (unadulterated file tree) or 'json' (a cut down version sutiable for saving as a.json file).
 
-Alternatively a custom function can be passed in which will be ran on every node (in order from the leaf-nodes back to the root-node) before the file tree is output. (As a starting point the function used when the string 'json' is supplied can be found in lib/transform-options.js).
+Alternatively a custom function can be passed in which will be ran on every node (in order from the leaf-nodes back to the root-node) before the file tree is output. (As a starting point the function used when the string 'json' is supplied can be found in [lib/transform-options.js](https://github.com/iamcdonald/gulp-file-tree/blob/master/lib/transform-options.js)).
 
 
 #### options.emitFiles (default: false)
