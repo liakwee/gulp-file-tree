@@ -50,7 +50,7 @@ for the following file structure:
 
 ### gulp-file-tree(options)
 
-#### options.output (default: `tree`)
+#### options.output (default: `'tree'`)
 Type: `String|Object`
 
 If an object is supplied the resulting file tree is placed on that object under the property `tree`.
@@ -78,7 +78,7 @@ An object like:
 `
 will place the returned value of the function on the new object under the property `cwdLength`.
 
-#### options.outputTransform (default: `json`)
+#### options.outputTransform (default: `'json'`)
 Type: `String|Function`
 
 Allows custom post processing of the resulting file tree.
