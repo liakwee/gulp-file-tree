@@ -3,7 +3,7 @@
 'use strict';
 
 var assert = require('assert'),
-	TreeNode = require('../lib/TreeNode'),
+	TreeNode = require('../src/TreeNode'),
 	File = require('vinyl');
 
 describe('TreeNode', function () {

@@ -1,7 +1,7 @@
 'use strict';
 
-var TreeNode = require('./lib/TreeNode.js'),
-	TRANSFORM_OPTS = require('./lib/transform-options.js'),
+var TreeNode = require('./TreeNode.js'),
+	TRANSFORM_OPTS = require('./transform-options.js'),
 	util = require('util'),
 	File = require('vinyl'),
 	Transform = require('readable-stream').Transform;
