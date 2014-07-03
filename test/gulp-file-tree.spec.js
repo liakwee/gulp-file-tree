@@ -5,16 +5,29 @@
 var assert = require('assert'),
 	gulp = require('gulp'),
 	TreeNode = require('../src/TreeNode'),
-	gulpFileTree = require('../src/index');
+	GulpFileTree = require('../src/gulp-file-tree');
 
 describe('gulp-file-tree', function () {
 
+	var defaultOptions;
+	beforeEach(function () {
+		defaultOptions = {
+			output: 'tree',
+			outputTransform: 'json',
+			appendProperty: null,
+			emitFiles: false,
+			properties: ['relative']
+		};
+	});
+
 	it('handles being passed no files', function (done) {
 		var treeObject= {},
-			gft = gulpFileTree({
-				output: treeObject
+			gft = new GulpFileTree({
+				output: treeObject,
+				outputTransform: null
 			}),
 			files = [];
+		
 		gft.on('data', function (file){
 			files.push(file);
 		});
@@ -30,7 +43,7 @@ describe('gulp-file-tree', function () {
 
 	describe('correctly builds file tree', function () {
 
-		var allFiles;
+		var allFiles, gft, files, treeObject;
 		beforeEach(function (done) {
 			allFiles = [];
 			gulp.src('test/fixture/path/to/folder/**/*')
@@ -42,6 +55,18 @@ describe('gulp-file-tree', function () {
 				.on('end', function () {
 					done();
 				});
+			
+			files = [];
+			treeObject = {};
+			gft = new GulpFileTree({
+				output: treeObject,
+				outputTransform: null,
+				emitFiles: true,
+				appendProperty: null,
+				properties: ['relative']
+			});
+
+			
 		});
 
 		function checkTree(files, tree) {
@@ -70,12 +95,6 @@ describe('gulp-file-tree', function () {
 		}
 	
 		it('correctly outputs tree for passed in files - I', function (done) {
-			var treeObject = {},
-				gft = gulpFileTree({
-							output: treeObject, 
-							outputTransform: 'raw',
-							emitFiles: true}),
-				files = [];
 			gft.on('data', function (file){
 				files.push(file);
 			});
@@ -90,12 +109,6 @@ describe('gulp-file-tree', function () {
 		});
 
 		it('correctly outputs tree for passed in files - II', function (done) {
-			var treeObject = {},
-				gft = gulpFileTree({
-							output: treeObject, 
-							outputTransform: 'raw',
-							emitFiles: true}),
-				files = [];
 			gft.on('data', function (file){
 				files.push(file);
 			});
@@ -103,18 +116,12 @@ describe('gulp-file-tree', function () {
 				checkTree(files, treeObject.tree);
 				done();
 			});
-
+		
 			gulp.src(['test/fixture/path/to/folder/two/**/*.html'])
 				.pipe(gft);
 		});
 
 		it('correctly outputs tree for passed in files - III', function (done) {
-			var treeObject = {},
-				gft = gulpFileTree({
-							output: treeObject, 
-							outputTransform: 'raw',
-							emitFiles: true}),
-				files = [];
 			gft.on('data', function (file){
 				files.push(file);
 			});
@@ -122,7 +129,7 @@ describe('gulp-file-tree', function () {
 				checkTree(files, treeObject.tree);
 				done();
 			});
-
+		
 			gulp.src(['test/fixture/**/*.scss'])
 				.pipe(gft);
 		});
@@ -130,11 +137,16 @@ describe('gulp-file-tree', function () {
 
 	it('disregards redundant nodes at the root of the tree', function (done) {
 		var treeObject = {},
-			gft = gulpFileTree({
-						output: treeObject, 
-						outputTransform: 'raw',
-						emitFiles: true}),
+			gft = new GulpFileTree({
+				output: treeObject,
+				outputTransform: null,
+				emitFiles: true,
+				appendProperty: null,
+				properties: ['relative']
+			}),
 			cwd;
+
+		
 		gft.on('data', function (file){
 			cwd = file.cwd;
 		});
@@ -152,8 +164,15 @@ describe('gulp-file-tree', function () {
 
 		describe('default', function () {
 			it('outputs a file tree representing passed in files in \'json\' style', function (done) {
-				var gft = gulpFileTree(),
+				var gft = new GulpFileTree({
+						output: 'tree',
+						outputTransform: 'json',
+						emitFiles: false,
+						appendProperty: null,
+						properties: ['relative']
+					}),
 					files = [];
+
 				gft.on('data', function (file){
 					files.push(file);
 				});
@@ -174,8 +193,15 @@ describe('gulp-file-tree', function () {
 	
 		describe('options.output', function () {
 				it('saves output as json file to given file path if options.output is a string', function (done) {
-				var gft = gulpFileTree({output: 'path/to/tree'}),
+				var gft = new GulpFileTree({
+						output: 'path/to/tree',
+						outputTransform: 'json',
+						emitFiles: false,
+						appendProperty: null,
+						properties: ['relative']
+					}),
 					files = [];
+
 				gft.on('data', function (file){
 					files.push(file);
 				});
@@ -194,10 +220,14 @@ describe('gulp-file-tree', function () {
 	
 			});
 	
-			it('sets output on object if output.options is an object', function (done) {
+			it('sets output on object if options.output is an object', function (done) {
 				var treeObject = {},
-					gft = gulpFileTree({output: treeObject}),
+					gft,
 					files = [];
+
+				defaultOptions.output = treeObject;
+				gft = new GulpFileTree(defaultOptions);
+
 				gft.on('data', function (file){
 					files.push(file);
 				});
@@ -214,9 +244,16 @@ describe('gulp-file-tree', function () {
 	
 			});
 	
-			it('does not output tree if output.options is set to \'none\'', function (done) {
-				var gft = gulpFileTree({output: 'none'}),
+			it('does not output tree if options.output is null', function (done) {
+				var gft = new GulpFileTree({
+						output: null,
+						outputTransform: null,
+						emitFiles: false,
+						appendProperty: null,
+						properties: ['relative']
+					}),
 					files = [];
+
 				gft.on('data', function (file){
 					files.push(file);
 				});
@@ -229,11 +266,40 @@ describe('gulp-file-tree', function () {
 					.pipe(gft);
 			
 			});
+
+			it('does not output tree if output.options is undefined', function (done) {
+				var gft = new  GulpFileTree({
+						output: undefined,
+						outputTransform: null,
+						emitFiles: false,
+						appendProperty: null,
+						properties: ['relative']
+					}),
+					files = [];
+
+				gft.on('data', function (file){
+					files.push(file);
+				});
+				gft.on('end', function () {
+					assert.equal(files.length, 0);
+					done();
+				});
+	
+				gulp.src('test/fixture/path/to/folder/**/*')
+					.pipe(gft);
+			
+			});
+
 		});
 	
 		describe('options.emitFiles', function () {
-			it('does not emits files used to build the tree if output.emitFiles is false', function (done) {
-				var gft = gulpFileTree({output: {}, emitFiles: false}),
+			it('does not emit files used to build the tree if output.emitFiles is false', function (done) {
+				var gft = new GulpFileTree({
+						output: {}, 
+						outputTransform: null,
+						emitFiles: false,
+						appendProperty: null,
+						properties: ['relative']}),
 					files = [];
 				gft.on('data', function (file){
 					files.push(file);
@@ -249,7 +315,12 @@ describe('gulp-file-tree', function () {
 			});
 	
 			it('emits files used to build the tree if output.emitFiles is true', function (done) {
-				var gft = gulpFileTree({output: {}, emitFiles: true}),
+				var gft = new GulpFileTree({
+						output: {},
+					   	outputTransform: null,	
+						emitFiles: true,
+						appendProperty: null,
+						properties: ['relative']}),
 					files = [];
 					gft.on('data', function (file){
 					files.push(file);
@@ -268,8 +339,10 @@ describe('gulp-file-tree', function () {
 		describe('options.properties', function () {
 			it('reduces the value for each node in the tree to the given properties', function (done) {
 				var treeObject = {},
-					gft = gulpFileTree({
-								output: treeObject, 
+					gft = new GulpFileTree({
+								output: treeObject,
+							   	outputTransform: 'json',
+								appendProperty: null,	
 								properties: ['cwd', 'relative'], 
 								emitFiles: true}),
 					cwd;
@@ -291,10 +364,12 @@ describe('gulp-file-tree', function () {
 	
 			it('reduces the value by assigning property values to different keys if object is passed in within array', function (done){
 				var treeObject = {},
-					gft = gulpFileTree({
-							output: treeObject, 
+					gft = new GulpFileTree({
+							output: treeObject,
+						    outputTransform: 'json',	
 							properties: [{'projectDir' : 'cwd'}, 'relative'], 
-							emitFiles: true}),
+							emitFiles: true,
+							appendProperty: null}),
 					cwd;
 				gft.on('data', function (file) {
 					cwd = file.cwd;
@@ -317,10 +392,12 @@ describe('gulp-file-tree', function () {
 					cwdLength = function (value) {
 						return value.cwd.length;
 					},
-					gft = gulpFileTree({
-							output: treeObject, 
+					gft = new GulpFileTree({
+							output: treeObject,
+						    outputTransform: 'json',	
 							properties: [{'cwdLength' : cwdLength}, 'relative'], 
-							emitFiles: true}),
+							emitFiles: true,
+							appendProperty: null}),
 					cwd;
 				gft.on('data', function (file) {
 					cwd = file.cwd.length;
@@ -341,26 +418,22 @@ describe('gulp-file-tree', function () {
 		});
 	
 		describe('options.outputFormat', function () {
-			it('outputs the json tree if options.outputFormat is neither \'json\' or \'raw\'', function (done) {
+			it('outputs the raw tree if options.outputFormat is string and not found in transform-options', function (done) {
 				var treeObject = {},
-					gft = gulpFileTree({
+					gft = new GulpFileTree({
 							output: treeObject,
-							outputTransform: 'wrong'});
+							outputTransform: 'wrong',
+							emitFiles: false,
+							appendProperty: null,
+							properties: ['relative']});
 				gft.on('data', function () {
 				});
 				gft.on('end', function () {
 					function checkNode(node) {
-						for (var key in node) {
-							if (node.hasOwnProperty(key)) {
-								if (node[key].isNull && !node[key].isNull()) {
-									assert(!!node[key].relative);
-								} else {
-									checkNode(node[key]);
-								}
-							}
-						}
+						assert(node instanceof TreeNode);
+						node.children.forEach(checkNode);
 					}
-					checkNode(treeObject);
+					checkNode(treeObject.tree);
 					done();
 				});
 				
@@ -370,9 +443,12 @@ describe('gulp-file-tree', function () {
 			
 			it('outputs a formatted version of the tree if options.outputFormat is \'json\'', function (done) {
 				var treeObject = {},
-					gft = gulpFileTree({
+					gft = new GulpFileTree({
 								output: treeObject,
-								outputTransform: 'json'});
+								outputTransform: 'json',
+								emitFiles: false,
+								appendProperty: null,
+								properties: ['relative']});
 				gft.on('data', function () {
 				});
 				gft.on('end', function () {
@@ -395,11 +471,14 @@ describe('gulp-file-tree', function () {
 					.pipe(gft);
 			});	
 	
-			it('outputs the raw tree if options.outputTransform is \'raw\'', function (done) {
+			it('outputs the raw tree if options.outputTransform is null', function (done) {
 				var treeObject = {},
-					gft = gulpFileTree({
+					gft = new GulpFileTree({
 								output: treeObject,
-								outputTransform: 'raw'});
+								outputTransform: null,
+								emitFiles: false,
+								appendProperty: null,
+								properties: ['relative']});
 				gft.on('data', function () {
 				});
 				gft.on('end', function () {
@@ -438,10 +517,12 @@ describe('gulp-file-tree', function () {
 						});
 						return obj;
 					},
-					gft = gulpFileTree({
+					gft = new GulpFileTree({
 								emitFiles: true,
 								output: treeObject,
-								outputTransform: formatFunction}),
+								outputTransform: formatFunction,
+								appendProperty: null,
+								properties: ['relative']}),
 					cwd;
 				gft.on('data', function (file) {
 					cwd = file.cwd;
@@ -468,11 +549,12 @@ describe('gulp-file-tree', function () {
 		describe('options.appendProperty', function () {
 			it ('appends the tree (post transform) to each file passed in on the given property - (RAW)', function (done) {
 					var treeObject = {},
-					gft = gulpFileTree({
+					gft = new GulpFileTree({
 								emitFiles: true,
 								output: treeObject,
 								outputTransform: 'raw',
-								appendProperty: 'tree'}),
+								appendProperty: 'tree',
+								properties: ['relative']}),
 					files = [];
 				gft.on('data', function (file) {
 					files.push(file);
@@ -494,11 +576,12 @@ describe('gulp-file-tree', function () {
 			
 			it ('appends the tree (post transform) to each file passed in on the given property - (JSON)', function (done) {
 				var treeObject = {},
-					gft = gulpFileTree({
+					gft = new GulpFileTree({
 								emitFiles: true,
 								output: treeObject,
 								outputTransform: 'json',
-								appendProperty: 'file-tree-struct'}),
+								appendProperty: 'file-tree-struct',
+								properties: ['relative']}),
 					files = [];
 				gft.on('data', function (file) {
 					files.push(file);

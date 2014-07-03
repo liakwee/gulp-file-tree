@@ -126,7 +126,7 @@ describe('TreeNode', function () {
 			});
 		});
 
-		describe('updateTree', function () {
+		describe('addNodeToTree', function () {
 
 			it('updates node if it already exists', function () {
 				assert.equal(root.children[1].path, 'a/2');
@@ -136,7 +136,7 @@ describe('TreeNode', function () {
 					path: root.children[1].path,
 					contents: new Buffer('a file')
 				});
-				root.updateTree(new TreeNode(file.path, file));
+				root.addNodeToTree(new TreeNode(file.path, file));
 				assert.equal(root.children[1].path, 'a/2');
 				assert.equal(root.children[1].value, file);
 				assert.equal(root.children[1].isFile, true);
@@ -144,14 +144,14 @@ describe('TreeNode', function () {
 
 			it('adds the node to the tree if it does not already exist', function () {
 				var tn = new TreeNode('a/6');
-				root.updateTree(tn);
+				root.addNodeToTree(tn);
 				assert.equal(root.children[2].path, 'a/6');
 			});
 
 			it('throws an error if node does not already exist and it cannot be added', function () {
 				var tn = new TreeNode('b');
 				assert.throws(function () {
-					root.updateTree(tn);
+					root.addNodeToTree(tn);
 				}, Error);
 				
 			});
@@ -270,68 +270,6 @@ describe('TreeNode', function () {
 				assert.equal(root.children[0].value, root.children[0].path.length);
 				assert.equal(root.children[1].value, root.children[1].path.length);
 			});	
-		});
-
-		describe('reduceValue', function () {
-			
-			beforeEach(function () {
-				root = root.map(function (node) {
-					node.setValue(new File({
-						path: node.path,
-						contents: new Buffer('The path is ' + node.path)
-					}));
-					return node;
-				});				
-			});
-
-			it('reduces the value of each node down to the given properties', function () {
-				var properties = ['contents'];
-				root = root.reduceValue(properties);
-
-				assert.equal(root.value.path, undefined);
-				assert.equal(root.value.contents, 'The path is ' + root.path);
-
-				var node = root.children[0].children[0];
-				assert.equal(node.value.path, undefined);
-				assert.equal(node.value.contents, 'The path is ' + node.path);
-
-			});
-
-			it('accepts objects that to take a property and rename it', function () {
-				var properties = ['contents', {'newProp': 'path'}];
-				root = root.reduceValue(properties);
-
-				assert.equal(root.value.newProp, root.path);
-				assert.equal(root.value.contents, 'The path is ' + root.path);
-
-				var node = root.children[0].children[0];
-				assert.equal(node.value.newProp, node.path);
-				assert.equal(node.value.contents, 'The path is ' + node.path);
-			});
-			
-			it('accepts objects that use a function to derive a property', function () {
-				var properties = [{
-					'contentsLength' : function (val) {return val.contents.toString().length;}
-				}, 'contents'];
-				root = root.reduceValue(properties);
-
-				assert.equal(root.value.contents, 'The path is ' + root.path);
-				assert.equal(root.value.contentsLength, root.value.contents.length);
-
-				var node = root.children[0].children[0];
-				assert.equal(node.value.contents, 'The path is ' + node.path);
-				assert.equal(node.value.contentsLength, node.value.contents.length);
-
-			});	
-		});
-
-		describe('removeCircular', function () {
-			it('replace circular links to parents with the parents path', function () {
-				root = root.removeCircular();
-				assert.equal(root.parent, null);
-				assert.equal(root.children[0].parent, root.path);
-				assert.equal(root.children[0].children[0].parent, root.children[0].path);
-			});		
 		});
 	});
 });

@@ -1,10 +1,9 @@
-'use strict'; 
+'use strict';
 
 var TreeNode = function (path, value, parent) {
-	var self = this;
-	self.path = path;
-	self.children = [];
-	self.parent = parent || null;
+	this.path = path;
+	this.children = [];
+	this.parent = parent || null;
 	this.setValue(value);
 };
 
@@ -26,14 +25,14 @@ TreeNode.prototype.getName = function () {
 };
 
 TreeNode.prototype.getRoot = function () {
-	var root = this;
-	while (this.parent) {
-		root = this.parent;
+	var node = this;
+	while (node.parent) {
+		node = node.parent;
 	}
-	return root;
+	return node;
 };
 
-TreeNode.prototype.updateTree = function (node) {
+TreeNode.prototype.addNodeToTree = function (node) {
 	var root = this.getRoot(),
 		existingNode = root.findNodeByPath(node.path);
 	if (existingNode) {
@@ -90,7 +89,7 @@ TreeNode.prototype.pruneRoot = function () {
 
 TreeNode.prototype.map = function (func) {
 	var copy = new TreeNode(this.path, this.value, this.parent);
-	
+
 	this.children.forEach(function (node) {
 		copy.children.push(node.map(func));
 	});
@@ -99,52 +98,6 @@ TreeNode.prototype.map = function (func) {
 		return copy;
 	}
 	return func(copy);
-};
-
-TreeNode.prototype.reduceValue = function (properties) {
-	return this.map(function (node) {
-		if (node.value) {
-			var valueObj = {},
-				isNull = node.value.isNull();
-			valueObj.isNull = function () {
-				return isNull;
-			};
-			if (!isNull) {
-				properties.forEach(function (property) {
-					var valueProp = property,
-						newProp = property,
-						val;
-					if (typeof property === 'object') {
-						for (var key in property) {
-							if (property.hasOwnProperty(key)) {
-								valueProp = key;
-								newProp = property[key];
-							}
-						}
-					}
-					if (typeof newProp === 'object') {
-						throw new Error();
-					}
-	
-					if (typeof newProp === 'function') {
-						val = newProp(node.value);
-					} else {
-						val = node.value[newProp];
-					}
-					valueObj[valueProp] = val; 
-				});
-			}
-			node.value = valueObj;
-		}
-		return node;
-	});
-};
-
-TreeNode.prototype.removeCircular = function() {
-	return this.map(function (node) {
-		node.parent = node.parent ? node.parent.path : node.parent;
-		return node;
-	});	
 };
 
 module.exports = TreeNode;
