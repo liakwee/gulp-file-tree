@@ -5,7 +5,7 @@
 var assert = require('assert'),
 	gulp = require('gulp'),
 	Forestry = require('forestry'),
-	GulpFileTree = require('../src/gulp-file-tree');
+	gulpFileTree = require('../src/gulp-file-tree');
 
 describe('gulp-file-tree', function () {
 
@@ -19,7 +19,7 @@ describe('gulp-file-tree', function () {
 	});
 
 	it('handles being passed no files', function (done) {
-		var gft = new GulpFileTree({
+		var gft = gulpFileTree({
 				emitTree: true,
 				transform: null
 			}),
@@ -40,7 +40,7 @@ describe('gulp-file-tree', function () {
 
 	it('disregards redundant nodes at the root of the tree', function (done) {
 		var files = [],
-			gft = new GulpFileTree({
+			gft = gulpFileTree({
 				emitTree: true,
 				transform: null,
 				emitFiles: true,
@@ -79,7 +79,7 @@ describe('gulp-file-tree', function () {
 				});
 			
 			files = [];
-			gft = new GulpFileTree({
+			gft = gulpFileTree({
 				emitTree: true,
 				transform: null,
 				emitFiles: true,
@@ -152,11 +152,34 @@ describe('gulp-file-tree', function () {
 	});
 
 	describe('options', function () {
-		
+
+		describe('default', function () {
+			it('emits only a single file as tree.json containing the generated file tree in json friendly format', function (done) {
+				var gft = gulpFileTree(),
+					files = [];
+
+				gft.on('data', function (file) {
+					files.push(file);	
+				});			
+				gft.on('end', function () {
+					assert.equal(files.length, 1);
+					assert.equal(files[0].path, 'tree.json');
+					var tree = JSON.parse(files[0].contents.toString());
+					assert.equal(tree.data.path.replace(tree.data.cwd, ''), '/test/fixture/path/to/folder');
+					assert.equal(tree.data.name, 'folder');
+					assert.equal(tree.children.length, 4);
+					done();
+				});
+
+				gulp.src('test/fixture/**/*')
+					.pipe(gft);
+			});
+		});
+
 		describe('emitTree', function () {
 			
 			it('emits the generated tree as tree.json file if emitTree is true', function (done) {
-				var gft =  new GulpFileTree({
+				var gft =  gulpFileTree({
 						emitTree: true,
 						transform: null,
 						emitFiles: false
@@ -185,7 +208,7 @@ describe('gulp-file-tree', function () {
 					});
 				}
 				
-				var gft = new GulpFileTree({
+				var gft = gulpFileTree({
 						emitTree: true,
 						transform: transform,
 						emitFiles: false
@@ -215,7 +238,7 @@ describe('gulp-file-tree', function () {
 					return node;
 				}
 				
-				var gft = new GulpFileTree({
+				var gft = gulpFileTree({
 						emitTree: false,
 						transform: transform,
 						emitFiles: true
@@ -236,21 +259,21 @@ describe('gulp-file-tree', function () {
 
 			it('throws an error if transform passed in is not of type \'function\'', function () {
 				assert.throws(function () {
-					var gft = new GulpFileTree({
+					var gft = gulpFileTree({
 							transform: 'string'
 						});
 					gulp.src('test/fixture/**/*')
 						.pipe(gft);
 				}, TypeError, '\'transform\' option must be of type \'function\'');
 				assert.throws(function () {
-					var gft = new GulpFileTree({
+					var gft = gulpFileTree({
 							transform: 1245
 						});
 					gulp.src('test/fixture/**/*')
 						.pipe(gft);
 				}, TypeError, '\'transform\' option must be of type \'function\'');
 				assert.throws(function () {
-					var gft = new GulpFileTree({
+					var gft = gulpFileTree({
 							transform: {}
 						});
 					gulp.src('test/fixture/**/*')
@@ -261,7 +284,7 @@ describe('gulp-file-tree', function () {
 
 		describe('emitFiles', function () {
 			it('emits files passed through with tree added to each if emitFiles is true', function (done) {
-				var gft = new GulpFileTree({
+				var gft = gulpFileTree({
 						emitTree: false,
 						transform: null,
 						emitFiles: true

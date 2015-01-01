@@ -9,7 +9,24 @@ var GulpFileTree = function (opts) {
 
 	var files = [],
 		tree = null,
-		gft;
+		gft,
+		defaultOptions = {
+			emitTree: true,
+			transform: null,
+			emitFiles: false
+		};
+	
+	function overlayDefaults(options) {
+		for (var key in defaultOptions) {
+			if (!options.hasOwnProperty(key)) {
+				options[key] = defaultOptions[key];
+			}
+		}
+		return options;
+	}
+
+	opts = opts || {};
+	opts = overlayDefaults(opts);
 
 	if (opts.transform && typeof opts.transform !== 'function') {
 		throw new TypeError('\'transform\' option must be of type \'function\''); 
