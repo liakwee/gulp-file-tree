@@ -54,8 +54,8 @@ describe('gulp-file-tree', function () {
 		});
 		gft.on('end', function () {
 			var tree = JSON.parse(files.pop().contents.toString());
-			assert.notEqual(tree.data.path, cwd);
-			assert.equal(tree.data.path, cwd + '/test/fixture/path/to/folder');
+			assert.notEqual(tree.path, cwd);
+			assert.equal(tree.path, cwd + '/test/fixture/path/to/folder');
 			done();
 		});
 
@@ -91,7 +91,7 @@ describe('gulp-file-tree', function () {
 		});
 
 		function checkTree(files, tree) {
-			tree = Forestry.parse(tree, 'children', 'data');
+			tree = Forestry.parse(tree);
 			var shouldExist = allFiles.filter(function (file) {
 					return files.some(function (f) {
 						return f.path === file.path;
@@ -165,8 +165,8 @@ describe('gulp-file-tree', function () {
 					assert.equal(files.length, 1);
 					assert.equal(files[0].path, 'tree.json');
 					var tree = JSON.parse(files[0].contents.toString());
-					assert.equal(tree.data.path.replace(tree.data.cwd, ''), '/test/fixture/path/to/folder');
-					assert.equal(tree.data.name, 'folder');
+					assert.equal(tree.path.replace(tree.cwd, ''), '/test/fixture/path/to/folder');
+					assert.equal(tree.name, 'folder');
 					assert.equal(tree.children.length, 4);
 					done();
 				});

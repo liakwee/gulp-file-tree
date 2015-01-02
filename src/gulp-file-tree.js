@@ -55,14 +55,10 @@ var GulpFileTree = function (opts) {
 		}
 	}
 
-	function outputTree () {
-		if (tree) {
-			tree = transformTree();
-		}
+	function rawToJSON(tree) {
 		if (tree instanceof Forestry.Node) {
-			var data;
-			tree = tree.traverse(function (node) {
-				node.parent = null;
+			return tree.traverse(function (node) {
+				var data;
 				if (isVinylFile(node.data)) {
 					data = {
 						cwd: node.data.cwd,
@@ -73,10 +69,26 @@ var GulpFileTree = function (opts) {
 						isFile: node.data.stat ? node.data.stat.isFile() : false,
 						isDirectory: node.data.stat ? node.data.stat.isDirectory() : true
 					};
-					node.data = data;
+				} else {
+					data = node.data === Object(node.data) ? node.data : {data: node.data};
 				}
-			});
+				data.children = [];
+				for (var i = 0, l = node.children.length; i < l; i++) {
+					data.children[i] = node.children[i].data;
+				}
+				node.data = data;
+
+			}, Forestry.TRAVERSAL_TYPES.DFS_POST).data;
 		}
+		return tree;
+	}
+
+
+	function outputTree () {
+		if (tree) {
+			tree = transformTree();
+		}
+		tree = rawToJSON(tree);
 		gft.push(new File({
 			cwd: '',
 			base: '',
