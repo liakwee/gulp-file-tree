@@ -18,24 +18,76 @@ var gulp = require('gulp'),
 gulp.task('default', function () {
 	return gulp.src('src/pages/*.html')
 		.pipe(gft())
-		.pipe(gulp.dest('dist'));
+		.pipe(gulp.dest('./'));
 });
 ```
 The default created tree (saved as 'tree.json') would look like this:
 ```
 {
-  '.': {
-    'one.html': {'relative' : 'one.html'},
-    'two.html': {'relative' : 'two.html'},
-    'three' : {
-      'four.html': {'relative' : 'four.html'},
-      'five.html': {'relative' : 'five.html'}
-    }
-  }
+	"cwd": "/Users/you/project",
+	"base": "/Users/you/project/src/",
+	"path": "/Users/you/project/src/pages",
+	"relative": "pages",
+	"name": "pages",
+	"isFile": false,
+	"isDirectory": true,
+	"children": [
+		{
+			"cwd": "/Users/you/project",
+			"base": "/Users/you/project/src/",
+			"path": "/Users/you/project/src/pages/one.html",
+			"relative": "pages/one.html",
+			"name": "one.html",
+			"isFile": true,
+			"isDirectory": false,
+			"children": []
+		},
+		{
+			"cwd": "/Users/you/project",
+			"base": "/Users/you/project/src/",
+			"path": "/Users/you/project/src/pages/three",
+			"relative": "pages/three",
+			"name": "three",
+			"isFile": false,
+			"isDirectory": true,
+			"children": [
+				{
+					"cwd": "/Users/you/project",
+					"base": "/Users/you/project/src/",
+					"path": "/Users/you/project/src/pages/three/five.html",
+					"relative": "pages/three/five.html",
+					"name": "five.html",
+					"isFile": true,
+					"isDirectory": false,
+					"children": []
+				},
+				{
+					"cwd": "/Users/you/project",
+					"base": "/Users/you/project/src/",
+					"path": "/Users/you/project/src/pages/three/four.html",
+					"relative": "pages/three/four.html",
+					"name": "four.html",
+					"isFile": true,
+					"isDirectory": false,
+					"children": []
+				}
+			]
+		},
+		{
+			"cwd": "/Users/you/project",
+			"base": "/Users/you/project/src/",
+			"path": "/Users/you/project/src/pages/two.html",
+			"relative": "pages/two.html",
+			"name": "two.html",
+			"isFile": true,
+			"isDirectory": false,
+			"children": []
+		}
+	]
 }
 ```
 
-for the following file structure: 
+for the following file structure at `/Users/you/project`: 
 ```
 * src/
   * pages/
@@ -50,61 +102,30 @@ for the following file structure:
 
 ### gulp-file-tree(options)
 
-#### options.output (default: `'tree'`)
-Type: `String|Object`
+#### options.emitTree (default: `true`)
+Type: `Boolean`
 
-If an object is supplied the resulting file tree is placed on that object under the property `tree`.
-
-If a string is supplied the resulting file tree is saved as a .json file using the string as a relative file path.
-
-#### options.properties (default: `['relative']`)
-Type: `Array`
-
-An array of Strings and Objects used to decode the passed in vinyl File objects to the objects found in the resulting file tree.
-
-Strings simply transplant the property of the passed in [vinyl](https://github.com/wearefractal/vinyl) File on to the new object under the same property.
-
-An object like:
-`
-{'point' : 'cwd'}
-`
-will pull the property `cwd` from the [vinyl](https://github.com/wearefractal/vinyl) File and place it on the new object under the property `point`.
-
-An object like:
-`
-{'cwdLength' : function (file) {
-  return file.cwd.length;
-}}
-`
-will place the returned value of the function on the new object under the property `cwdLength`.
-
-#### options.outputTransform (default: `'json'`)
-Type: `String|Function`
-
-Allows custom post processing of the resulting file tree.
-
-A string can be used to select either `raw` (unadulterated file tree) or `json` (a cut down version sutiable for saving as a.json file).
-
-Alternatively a custom function can be passed in which will be ran on every node (in order from the leaf-nodes back to the root-node) before the file tree is output. (As a starting point the function used when the string 'json' is supplied can be found in [lib/transform-options.js](https://github.com/iamcdonald/gulp-file-tree/blob/master/lib/transform-options.js)).
-
+Determines whether a json file containing the tree structure should be emitted.
 
 #### options.emitFiles (default: `false`)
 Type: `Boolean`
 
-Indicates whether files passed in should be emitted.
+Determines whether files passed in are also emitted with an added property `tree` containing the generated file tree.
 
-#### options.appendProperty (default: `null`)
-Type: `String`
+#### options.transform (default: `null`)
+Type: `Function`
 
-A property under which the resulting file tree will be placed on each file object passed through the plugin.
-(Only of use when emitFiles is true).
+A function that can be passed in to perform a custom transform on a clone of the generated file tree which is provided as the first argument.  
 
+If emitFiles is `true` the function will recieve a second argument, the file itself, which can be used within the transform process. This allows for per-file tree-transforms which are could be used, for instance, to create page-based static-site navigation. 
 
-## TreeNode
+## Forestry
 
-The plugin uses the [TreeNode](https://github.com/iamcdonald/gulp-file-tree/blob/master/lib/TreeNode.js) object for modelling and building up the tree recursively.
+The plugin uses the [forestry](https://github.com/iamcdonald/forestry) lib for modelling and building up the tree and it is a structure of forestry nodes that you have access to 
+- on each emitted file, in the instance you set emitFiles to `true` and do not pass a `transform` function 
+- or via the first argument of a passed in `transform` function.  
 
-It is this object you have access to if you choose to output the raw tree either to an object or on each passed through [vinyl](https://github.com/wearefractal/vinyl) File. It is also the object passed to a custom `outputTransform` function.
+For more information on the functionality provided please see the forestry documentation.
 
 ## License
 
