@@ -24,7 +24,7 @@ describe('gulp-file-tree', function () {
 				transform: null
 			}),
 			files = [];
-		
+
 		gft.on('data', function (file){
 			files.push(file);
 		});
@@ -47,7 +47,7 @@ describe('gulp-file-tree', function () {
 			}),
 			cwd;
 
-		
+
 		gft.on('data', function (file){
 			files.push(file);
 			cwd = file.cwd;
@@ -62,7 +62,7 @@ describe('gulp-file-tree', function () {
 		gulp.src(['test/fixture/**/*'])
 			.pipe(gft);
 	});
-	
+
 	describe('correctly generates file tree from passed in files', function () {
 
 		var allFiles, gft, files;
@@ -77,14 +77,14 @@ describe('gulp-file-tree', function () {
 				.on('end', function () {
 					done();
 				});
-			
+
 			files = [];
 			gft = gulpFileTree({
 				emitTree: true,
 				transform: null,
 				emitFiles: true,
 			});
-			
+
 			gft.on('data', function (file){
 				files.push(file);
 			});
@@ -103,7 +103,7 @@ describe('gulp-file-tree', function () {
 					});
 				}),
 				foundNode;
-						
+
 			shouldExist.forEach(function (file) {
 				foundNode = tree.find(function (n) {
 					return n.data.path === file.path;
@@ -115,10 +115,10 @@ describe('gulp-file-tree', function () {
 			shouldNotExist.forEach(function (file) {
 				assert(tree.find(function (n) {
 					return n.data.path === file.path;
-				}) === null);					
+				}) === null);
 			});
 		}
-	
+
 		it('I', function (done) {
 			gft.on('end', function () {
 				checkTree(files, JSON.parse(files.pop().contents.toString()));
@@ -135,7 +135,7 @@ describe('gulp-file-tree', function () {
 				checkTree(files, JSON.parse(files.pop().contents.toString()));
 				done();
 			});
-		
+
 			gulp.src(['test/fixture/path/to/folder/two/**/*.html'])
 				.pipe(gft);
 		});
@@ -145,7 +145,7 @@ describe('gulp-file-tree', function () {
 				checkTree(files, JSON.parse(files.pop().contents.toString()));
 				done();
 			});
-		
+
 			gulp.src(['test/fixture/**/*.scss'])
 				.pipe(gft);
 		});
@@ -159,8 +159,8 @@ describe('gulp-file-tree', function () {
 					files = [];
 
 				gft.on('data', function (file) {
-					files.push(file);	
-				});			
+					files.push(file);
+				});
 				gft.on('end', function () {
 					assert.equal(files.length, 1);
 					assert.equal(files[0].path, 'tree.json');
@@ -177,7 +177,7 @@ describe('gulp-file-tree', function () {
 		});
 
 		describe('emitTree', function () {
-			
+
 			it('emits the generated tree as tree.json file if emitTree is true', function (done) {
 				var gft =  gulpFileTree({
 						emitTree: true,
@@ -186,8 +186,8 @@ describe('gulp-file-tree', function () {
 					}),
 					files = [];
 				gft.on('data', function (file) {
-					files.push(file);	
-				});			
+					files.push(file);
+				});
 				gft.on('end', function () {
 					assert.equal(files.length, 1);
 					assert.equal(files[0].path, 'tree.json');
@@ -200,14 +200,14 @@ describe('gulp-file-tree', function () {
 
 		});
 
-		describe('transform', function () {	
+		describe('transform', function () {
 			it('transforms the generated tree using the passed transform function', function (done) {
 				function transform(tree) {
 					return tree.traverse(function (node) {
 						node.data = node.data.relative.replace(/.*\//, '');
 					});
 				}
-				
+
 				var gft = gulpFileTree({
 						emitTree: true,
 						transform: transform,
@@ -229,7 +229,7 @@ describe('gulp-file-tree', function () {
 			});
 
 			it('passes each file into the transform if emitFiles is true', function (done) {
-				
+
 				function transform(tree, file) {
 					var node = tree.find(function (node) {
 						return node.data.path === file.path;
@@ -237,7 +237,7 @@ describe('gulp-file-tree', function () {
 					node.data = node.data.path;
 					return node;
 				}
-				
+
 				var gft = gulpFileTree({
 						emitTree: false,
 						transform: transform,
@@ -289,8 +289,8 @@ describe('gulp-file-tree', function () {
 						transform: null,
 						emitFiles: true
 					}),
-					files = [];	
-	
+					files = [];
+
 
 				gft.on('data', function (file) {
 					files.push(file);
@@ -304,10 +304,9 @@ describe('gulp-file-tree', function () {
 				});
 				gulp.src('test/fixture/**/*.html')
 					.pipe(gft);
-			});	
+			});
 		});
-		
+
 	});
 
 });
-

@@ -5,7 +5,7 @@
   "main": "src/gulp-file-tree.js",
   "scripts": {
     "pretest": "jshint **/*.js",
-    "test": "mocha -R spec"
+    "test": "istanbul cover _mocha -- -R spec"
   },
   "repository": {
     "type": "git",
@@ -30,11 +30,14 @@
   "homepage": "https://github.com/iamcdonald/gulp-file-tree",
   "devDependencies": {
     "gulp": "^3.8.5",
+    "istanbul": "^0.3.17",
     "jshint": "^2.5.1",
-    "mocha": "^1.20.1"
+    "mocha": "^1.20.1",
+    "proxyquire": "^1.6.0",
+    "sinon": "^1.15.4"
   },
   "dependencies": {
-    "forestry": "^0.3.0",
+    "forestry": "^0.4.1",
     "readable-stream": "^1.0.27-1",
     "vinyl": "^0.2.3"
   }
