@@ -1,6 +1,6 @@
 {
   "name": "gulp-file-tree",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A gulp plugin for amalgamating a stream of files into a file tree",
   "main": "src/gulp-file-tree.js",
   "scripts": {
