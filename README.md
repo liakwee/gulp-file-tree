@@ -1,4 +1,4 @@
-[gulp](https://github.com/wearefractal/gulp)-file-tree [![Build Status](https://travis-ci.org/iamcdonald/gulp-file-tree.svg?branch=master)](https://travis-ci.org/iamcdonald/gulp-file-tree)
+[gulp](https://github.com/wearefractal/gulp)-file-tree [![Build Status](https://travis-ci.org/iamcdonald/gulp-file-tree.svg?branch=master)](https://travis-ci.org/iamcdonald/gulp-file-tree) [![Coverage Status](https://coveralls.io/repos/iamcdonald/gulp-file-tree/badge.svg?branch=master&service=github)](https://coveralls.io/github/iamcdonald/gulp-file-tree?branch=master)
 ==============
 
 A [gulp](https://github.com/wearefractal/gulp) plugin for amalgamating a stream of files into a file tree.
@@ -87,7 +87,7 @@ The default created tree (saved as 'tree.json') would look like this:
 }
 ```
 
-for the following file structure at `/Users/you/project`: 
+for the following file structure at `/Users/you/project`:
 ```
 * src/
   * pages/
@@ -117,12 +117,12 @@ Type: `Function`
 
 A function that can be passed in to perform a custom transform on a clone of the generated file tree which is provided as the first argument.  
 
-If emitFiles is `true` the function will recieve a second argument, the file itself, which can be used within the transform process. This allows for per-file tree-transforms which are could be used, for instance, to create page-based static-site navigation. 
+If emitFiles is `true` the function will recieve a second argument, the file itself, which can be used within the transform process. This allows for per-file tree-transforms which are could be used, for instance, to create page-based static-site navigation.
 
 ## Forestry
 
-The plugin uses the [forestry](https://github.com/iamcdonald/forestry) lib for modelling and building up the tree and it is a structure of forestry nodes that you have access to 
-- on each emitted file, in the instance you set emitFiles to `true` and do not pass a `transform` function 
+The plugin uses the [forestry](https://github.com/iamcdonald/forestry) lib for modelling and building up the tree and it is a structure of forestry nodes that you have access to
+- on each emitted file, in the instance you set emitFiles to `true` and do not pass a `transform` function
 - or via the first argument of a passed in `transform` function.  
 
 For more information on the functionality provided please see the forestry documentation.
