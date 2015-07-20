@@ -103,9 +103,11 @@ for the following file structure at `/Users/you/project`:
 ### gulp-file-tree(options)
 
 #### options.emitTree (default: `true`)
-Type: `Boolean`
+Type: `Boolean`|`String`
 
-Determines whether a json file containing the tree structure should be emitted.
+Determines whether a json file containing the tree structure should be emitted.  
+If a `String` is passed in the resulting file will be output under that name + '.json'.  
+Any other truthy value will result in the file being output under the default `tree.json` filename.
 
 #### options.emitFiles (default: `false`)
 Type: `Boolean`
@@ -121,7 +123,7 @@ If emitFiles is `true` the function will recieve a second argument, the file its
 
 ## Forestry
 
-The plugin uses the [forestry](https://github.com/iamcdonald/forestry) lib for modelling and building up the tree and it is a structure of forestry nodes that you have access to
+The plugin uses the [forestry](https://github.com/iamcdonald/forestry) library for modelling and building up the tree and it is a structure of forestry nodes that you have access to
 - on each emitted file, in the instance you set emitFiles to `true` and do not pass a `transform` function
 - or via the first argument of a passed in `transform` function.  
 
