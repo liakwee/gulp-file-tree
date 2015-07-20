@@ -197,7 +197,45 @@ describe('gulp-file-tree', function () {
 				gulp.src('test/fixture/**/*')
 					.pipe(gft);
 			});
+		
+			it('emits the generated tree under given file name if emitTree is a string', function (done) {
+				var gft =  gulpFileTree({
+						emitTree: 'other-file-name',
+						transform: null,
+						emitFiles: false
+					}),
+					files = [];
+				gft.on('data', function (file) {
+					files.push(file);
+				});
+				gft.on('end', function () {
+					assert.equal(files.length, 1);
+					assert.equal(files[0].path, 'other-file-name.json');
+					done();
+				});
 
+				gulp.src('test/fixture/**/*')
+					.pipe(gft);
+			});
+
+			it('emits no file if emitTree is false', function (done) {
+				var gft =  gulpFileTree({
+						emitTree: false,
+						transform: null,
+						emitFiles: false
+					}),
+					files = [];
+				gft.on('data', function (file) {
+					files.push(file);
+				});
+				gft.on('end', function () {
+					assert.equal(files.length, 0);
+					done();
+				});
+
+				gulp.src('test/fixture/**/*')
+					.pipe(gft);
+			});
 		});
 
 		describe('transform', function () {

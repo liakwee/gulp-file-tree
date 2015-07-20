@@ -32,11 +32,12 @@ var GulpFileTree = function (opts) {
 	}
 
 	function outputTree () {
-		var tree = fileTree.getNonCircularTree();
+		var tree = fileTree.getNonCircularTree(),
+			fileName =  typeof opts.emitTree === 'string' ? opts.emitTree : 'tree';
 		gft.push(new File({
 			cwd: '',
 			base: '',
-			path: 'tree.json',
+			path: fileName + '.json',
 			contents: new Buffer(JSON.stringify(tree, null, '\t'))
 		}));
 	}
