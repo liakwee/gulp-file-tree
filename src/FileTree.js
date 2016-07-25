@@ -2,8 +2,7 @@
 
 var Forestry = require('forestry'),
     File = require('vinyl'),
-    path = require('path'),
-    parentRegEx = /\/?[^\/]*\/?$/;
+    path = require('path');
 
 function findExistingFile (file, tree) {
     return tree.find(function (n) {
@@ -11,16 +10,23 @@ function findExistingFile (file, tree) {
     });
 }
 
+function getParentPath(childPath) {
+	var parentPath =  path.resolve(childPath, '../');
+	if (parentPath !== childPath) {
+		return parentPath;
+	}
+	return path.parse(childPath).root;
+}
+
 function findParentFolder (file, tree) {
-    var path = file.path.replace(parentRegEx, '');
+		var parentPath = getParentPath(file.path);
     return tree.find(function (n) {
-        return n.data.path === path;
+        return n.data.path === parentPath;
     });
 }
 
 function createInitialTree() {
-    var dirs = process.cwd().split(path.sep),
-        base = path.sep + dirs[1];
+    var base = path.parse(process.cwd()).root;
     return new Forestry.Node(new File({
         cwd: base,
         base: base,
@@ -35,7 +41,7 @@ function decodeNode(node) {
             base: node.data.base,
             path: node.data.path,
             relative: node.data.relative,
-            name: node.data.path.replace(/.*\//, ''),
+            name: path.basename(node.data.path),
             isFile: node.data.stat ? node.data.stat.isFile() : false,
             isDirectory: node.data.stat ? node.data.stat.isDirectory() : true
         };
@@ -61,15 +67,14 @@ FileTree.prototype = {
                     this.addFileToTree(new File({
                         cwd: file.cwd,
                         base: file.base,
-                        path: file.path.replace(parentRegEx, '')
+                        path: getParentPath(file.path)
                     }));
         newNode = new Forestry.Node(file);
         found.addChild(newNode);
         return newNode;
     },
-    getTree: function () {
-        var self = this,
-            args = Array.prototype.slice.call(arguments);
+    getTree: function (file) {
+        var self = this;
         if (!this._tree) {
             return null;
         }
@@ -81,7 +86,7 @@ FileTree.prototype = {
             return file.clone();
         });
         if (self._transform) {
-            treeFrag = self._transform.apply(null, [treeFrag].concat(args));
+            treeFrag = self._transform(treeFrag, file);
         }
         return treeFrag;
     },

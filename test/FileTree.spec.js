@@ -12,7 +12,7 @@ var assert = require('assert'),
 describe('FileTree', function () {
 
     var testee,
-        basePath = path.sep + process.cwd().split(path.sep)[1];
+        basePath = path.parse(process.cwd()).root;
 
     function getFileWithPath(path) {
         return new File({
@@ -113,7 +113,7 @@ describe('FileTree', function () {
             return acc;
         }
 
-        it('returns tree from first significant node', function () {
+        it('returns tree from first significant node I', function () {
             var file = getFileWithPath(path.resolve(basePath, 'inner/outer/file.js')),
                 initial;
             testee.addFileToTree(file);
@@ -124,7 +124,7 @@ describe('FileTree', function () {
             assert.deepEqual(testee.getTree().reduce([], reduceFunc), initial.reduce([], reduceFunc));
         });
 
-        it('returns tree from first significant node', function () {
+        it('returns tree from first significant node II', function () {
 
             testee.addFileToTree(getFileWithPath(path.resolve(basePath, 'inner/outer/file.js')));
             testee.addFileToTree(getFileWithPath(path.resolve(basePath, 'inner/outer/file2.js')));

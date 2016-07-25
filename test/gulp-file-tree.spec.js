@@ -4,6 +4,7 @@
 
 var assert = require('assert'),
 	gulp = require('gulp'),
+	path = require('path'),
 	Forestry = require('forestry'),
 	gulpFileTree = require('../src/gulp-file-tree');
 
@@ -54,12 +55,12 @@ describe('gulp-file-tree', function () {
 		});
 		gft.on('end', function () {
 			var tree = JSON.parse(files.pop().contents.toString());
-			assert.notEqual(tree.path, cwd);
-			assert.equal(tree.path, cwd + '/test/fixture/path/to/folder');
+			assert.notEqual(tree.path, path.resolve());
+			assert.equal(tree.path, path.resolve('test/fixture/path/to/folder'));
 			done();
 		});
 
-		gulp.src(['test/fixture/**/*'])
+		gulp.src([path.resolve('test/fixture/**/*')])
 			.pipe(gft);
 	});
 
@@ -165,7 +166,7 @@ describe('gulp-file-tree', function () {
 					assert.equal(files.length, 1);
 					assert.equal(files[0].path, 'tree.json');
 					var tree = JSON.parse(files[0].contents.toString());
-					assert.equal(tree.path.replace(tree.cwd, ''), '/test/fixture/path/to/folder');
+					assert.equal(tree.path, path.resolve('test/fixture/path/to/folder'));
 					assert.equal(tree.name, 'folder');
 					assert.equal(tree.children.length, 4);
 					done();
@@ -197,7 +198,7 @@ describe('gulp-file-tree', function () {
 				gulp.src('test/fixture/**/*')
 					.pipe(gft);
 			});
-		
+
 			it('emits the generated tree under given file name if emitTree is a string', function (done) {
 				var gft =  gulpFileTree({
 						emitTree: 'other-file-name',
@@ -241,8 +242,9 @@ describe('gulp-file-tree', function () {
 		describe('transform', function () {
 			it('transforms the generated tree using the passed transform function', function (done) {
 				function transform(tree) {
+					var path = require('path');
 					return tree.traverse(function (node) {
-						node.data = node.data.relative.replace(/.*\//, '');
+						node.data = path.basename(node.data.relative);
 					});
 				}
 
@@ -287,7 +289,7 @@ describe('gulp-file-tree', function () {
 				});
 				gft.on('end', function () {
 					files.forEach(function (file) {
-						assert.equal(file.tree.data, file.path.replace(/\/?[^\/]*\/?$/, ''));
+						assert.equal(file.tree.data, path.resolve(file.path, '../'));
 					});
 					done();
 				});
