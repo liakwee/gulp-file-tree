@@ -40,6 +40,7 @@ var GulpFileTree = function (opts) {
 			path: fileName + '.json',
 			contents: new Buffer(JSON.stringify(tree, null, '\t'))
 		}));
+		console.log('test');
 	}
 
 	var GulpFileTree = function () {
