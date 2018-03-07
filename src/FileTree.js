@@ -41,7 +41,7 @@ function decodeNode(node) {
             base: node.data.base,
             path: node.data.path,
             relative: node.data.relative,
-            name: path.basename(node.data.path),
+            name: path.parse(path.basename(node.data.path)).name,
             isFile: node.data.stat ? node.data.stat.isFile() : false,
             isDirectory: node.data.stat ? node.data.stat.isDirectory() : true
         };
