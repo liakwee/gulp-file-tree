@@ -41,7 +41,7 @@ function decodeNode(node) {
             base: node.data.base,
             path: node.data.path,
             relative: node.data.relative,
-            name: path.parse(path.basename(node.data.path)).name,
+            name: path.parse(path.basename(node.data.path)).name.replace(/-/g," "),
             isFile: node.data.stat ? node.data.stat.isFile() : false,
             isDirectory: node.data.stat ? node.data.stat.isDirectory() : true
         };
