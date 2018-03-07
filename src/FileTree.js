@@ -46,6 +46,7 @@ function decodeNode(node) {
       name: capitalizeFirstLetter(path
         .parse(path.basename(node.data.path))
         .name.replace(/-/g, ' ')),
+      id: path.parse(path.basename(node.data.path)).name,
       isFile: node.data.stat ? node.data.stat.isFile() : false,
       isDirectory: node.data.stat ? node.data.stat.isDirectory() : true
     };
